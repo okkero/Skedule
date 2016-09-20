@@ -1,4 +1,4 @@
-package okkero.spigotutils.extensions
+package okkero.spigotutils.extensions.scheduler
 
 import okkero.spigotutils.extensions.scheduler.schedule
 import org.bukkit.Bukkit
