@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>okkero.spigotutils</groupId>
-    <artifactId>SchedulerExtensions</artifactId>
+    <artifactId>skedule</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>SchedulerExtensions</name>
+    <name>Skedule</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
