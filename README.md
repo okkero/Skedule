@@ -1,4 +1,4 @@
-# Warning! <img src="http://www.clipartkid.com/images/69/big-image-png-WOKgeg-clipart.png" width="100px">
+# Warning! <img src="http://www.freeiconspng.com/uploads/warning-icon-5.png" width="100px">
 This resource uses features of the early access preview of Kotlin 1.1. Jetbrains has made no guarantees of compatibility between the current EAP and the final release of 1.1. Therefore the APIs present in this resource may change between now and the release of Kotlin 1.1.
 
 More information here:  
