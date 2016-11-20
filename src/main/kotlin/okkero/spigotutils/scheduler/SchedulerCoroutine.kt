@@ -1,6 +1,6 @@
-package okkero.spigotutils.extensions.scheduler
+package okkero.spigotutils.scheduler
 
-import okkero.spigotutils.extensions.scheduler.SynchronizationContext.*
+import okkero.spigotutils.scheduler.SynchronizationContext.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
@@ -118,12 +118,12 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
 
 }
 
-class CoroutineTask(private val controller: BukkitSchedulerController) {
+class CoroutineTask internal constructor(private val controller: BukkitSchedulerController) {
 
     val plugin: Plugin
         get() = controller.plugin
-    val currentTaskId: Int?
-        get() = controller.currentTask?.taskId
+    val currentTask: BukkitTask?
+        get() = controller.currentTask
     val isSync: Boolean
         get() = controller.currentTask?.isSync ?: false
     val isAsync: Boolean
