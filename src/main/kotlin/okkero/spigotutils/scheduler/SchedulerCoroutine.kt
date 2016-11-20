@@ -1,6 +1,6 @@
-package okkero.spigotutils.extensions.scheduler
+package okkero.spigotutils.scheduler
 
-import okkero.spigotutils.extensions.scheduler.SynchronizationContext.*
+import okkero.spigotutils.scheduler.SynchronizationContext.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
@@ -17,9 +17,11 @@ import org.bukkit.scheduler.BukkitTask
  * @see SynchronizationContext
  */
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
-                             coroutine co: BukkitSchedulerController.() -> Continuation<Unit>) {
+                             coroutine co: BukkitSchedulerController.() -> Continuation<Unit>): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
     controller.start(initialContext, controller.co())
+
+    return CoroutineTask(controller)
 }
 
 /**
@@ -27,10 +29,10 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  *
  * @property plugin the Plugin instance to schedule the tasks bound to this coroutine
  * @property scheduler the BukkitScheduler instance to schedule the tasks bound to this coroutine
- * @property currentTask the task that is currently executing within the context of this coroutine
- * @property isRepeating whether this coroutine is currently backed by a repeating task
+ * @property currentTask the currentTask that is currently executing within the context of this coroutine
+ * @property isRepeating whether this coroutine is currently backed by a repeating currentTask
  */
-//TODO has to be thread safe
+//TODO Verify if thread safe
 class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
@@ -47,8 +49,8 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
 
     /**
      * Wait for __at least__ the specified amount of ticks. If the coroutine is currently backed by a non-repeating
-     * task, a new Bukkit task will be scheduled to run the specified amount of ticks later. If this coroutine is
-     * currently backed by a repeating task, the amount of ticks waited depends on the repetition resolution of the
+     * currentTask, a new Bukkit currentTask will be scheduled to run the specified amount of ticks later. If this coroutine is
+     * currently backed by a repeating currentTask, the amount of ticks waited depends on the repetition resolution of the
      * coroutine. For example, if the repetition resolution is `10` and the `ticks` argument is `12`, it will result in
      * a delay of `20` ticks.
      *
@@ -62,8 +64,8 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
 
     /**
      * Relinquish control for as short an amount of time as possible. That is, wait for as few ticks as possible.
-     * If this coroutine is currently backed by a non-repeating task, this will result in a task running at the next
-     * possible occasion. If this coroutine is currently backed by a repeating task, this will result in a delay for as
+     * If this coroutine is currently backed by a non-repeating currentTask, this will result in a currentTask running at the next
+     * possible occasion. If this coroutine is currently backed by a repeating currentTask, this will result in a delay for as
      * short an amount of ticks as the repetition resolution allows.
      *
      * @return the actual amount of ticks waited
@@ -84,20 +86,20 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
     }
 
     /**
-     * Force a new task to be scheduled in the specified context. This method will result in a new repeating or
-     * non-repeating task to be scheduled. Repetition state and resolution is determined by the currently running task.
+     * Force a new currentTask to be scheduled in the specified context. This method will result in a new repeating or
+     * non-repeating currentTask to be scheduled. Repetition state and resolution is determined by the currently running currentTask.
      *
-     * @param context the synchronization context of the new task
+     * @param context the synchronization context of the new currentTask
      */
     suspend fun newContext(context: SynchronizationContext, cont: Continuation<Unit>) {
         schedulerDelegate.forceNewContext(context, { cont.resume(Unit) })
     }
 
     /**
-     * Turn this coroutine into a repeating coroutine. This method will result in a new repeating task being scheduled.
-     * The new task's interval will be the same as the specified resolution. Subsequent calls to [waitFor] and [yield]
-     * will from here on out defer further execution to the next iteration of the repeating task. This is useful for
-     * things like countdowns and delays at fixed intervals, since [waitFor] will not result in a new task being
+     * Turn this coroutine into a repeating coroutine. This method will result in a new repeating currentTask being scheduled.
+     * The new currentTask's interval will be the same as the specified resolution. Subsequent calls to [waitFor] and [yield]
+     * will from here on out defer further execution to the next iteration of the repeating currentTask. This is useful for
+     * things like countdowns and delays at fixed intervals, since [waitFor] will not result in a new currentTask being
      * spawned.
      */
     suspend fun repeating(resolution: Long, cont: Continuation<Long>) {
@@ -112,6 +114,23 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
     operator fun handleException(e: Throwable, cont: Continuation<Nothing>) {
         currentTask?.cancel()
         throw e
+    }
+
+}
+
+class CoroutineTask internal constructor(private val controller: BukkitSchedulerController) {
+
+    val plugin: Plugin
+        get() = controller.plugin
+    val currentTask: BukkitTask?
+        get() = controller.currentTask
+    val isSync: Boolean
+        get() = controller.currentTask?.isSync ?: false
+    val isAsync: Boolean
+        get() = !(controller.currentTask?.isSync ?: true)
+
+    fun cancel() {
+        controller.currentTask!!.cancel()
     }
 
 }

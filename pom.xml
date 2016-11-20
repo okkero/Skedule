@@ -6,10 +6,21 @@
 
     <groupId>okkero.spigotutils</groupId>
     <artifactId>skedule</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Skedule</name>
+
+    <distributionManagement>
+        <repository>
+            <id>deployment-elycin</id>
+            <url>http://d.elyc.in:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>deployment-elycin</id>
+            <url>http://d.elyc.in:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,11 +55,13 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.10.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

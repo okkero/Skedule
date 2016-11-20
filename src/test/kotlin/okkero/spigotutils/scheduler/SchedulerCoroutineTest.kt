@@ -1,6 +1,5 @@
-package okkero.spigotutils.extensions.scheduler
+package okkero.spigotutils.scheduler
 
-import okkero.spigotutils.extensions.scheduler.schedule
 import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.plugin.Plugin
@@ -63,6 +62,7 @@ class SchedulerCoroutineTest {
             waitFor(30)
         }
         verify(scheduler, times(2)).runTaskLater(eq(plugin), any(Runnable::class.java), eq(30L))
+        verifyNoMoreInteractions(scheduler)
     }
 
     @Test
@@ -76,6 +76,21 @@ class SchedulerCoroutineTest {
         mockRepeatingTask!!.startTask()
         verify(scheduler).runTaskTimer(eq(plugin), any(Runnable::class.java), anyLong(), eq(20L))
         verifyNoMoreInteractions(scheduler)
+    }
+
+    @Test
+    fun `cancels bukkit task when skedule task is cancelled`() {
+        var task: BukkitTask? = null
+        `when`(scheduler.runTaskLater(eq(plugin), any(Runnable::class.java), anyLong())).then {
+            task = mock(BukkitTask::class.java)
+            task
+        }
+        val skeduleTask = scheduler.schedule(plugin) {
+            waitFor(40)
+        }
+
+        skeduleTask.cancel()
+        verify(task!!, times(1)).cancel()
     }
 
     private fun setupServerMock() {
