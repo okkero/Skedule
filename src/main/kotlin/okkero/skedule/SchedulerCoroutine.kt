@@ -1,6 +1,6 @@
-package okkero.spigotutils.scheduler
+package okkero.skedule
 
-import okkero.spigotutils.scheduler.SynchronizationContext.*
+import okkero.skedule.SynchronizationContext.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
@@ -145,7 +145,7 @@ enum class SynchronizationContext {
      */
     SYNC,
     /**
-     * The coroutine is in asynchronous context, and all tasks are scheduled asynchronously from the main server thread.
+     * The coroutine is in asynchronous context, and all tasks are scheduled asynchronously to the main server thread.
      */
     ASYNC
 

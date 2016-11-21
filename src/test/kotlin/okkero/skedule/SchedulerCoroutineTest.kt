@@ -1,4 +1,4 @@
-package okkero.spigotutils.scheduler
+package okkero.skedule
 
 import org.bukkit.Bukkit
 import org.bukkit.Server
