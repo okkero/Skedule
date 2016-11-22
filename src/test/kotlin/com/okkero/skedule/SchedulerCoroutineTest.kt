@@ -1,4 +1,4 @@
-package okkero.skedule
+package com.okkero.skedule
 
 import org.bukkit.Bukkit
 import org.bukkit.Server

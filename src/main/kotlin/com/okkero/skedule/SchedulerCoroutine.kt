@@ -1,6 +1,6 @@
-package okkero.skedule
+package com.okkero.skedule
 
-import okkero.skedule.SynchronizationContext.*
+import com.okkero.skedule.SynchronizationContext.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler

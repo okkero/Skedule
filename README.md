@@ -59,7 +59,39 @@ scheduler.schedule(plugin) {
 This example really shows where Skedule is at its most powerful.
 
 ### Repeating vs non-repeating
-TODO
+Take a look at the examples above one more time. They all share one common drawback, and it may not be
+obvious just by looking at them. At each suspension point (`waitFor`) a new task is scheduled for the delay.
+Every single time. This may not be desirable in all cases. Many a time - like in the for-loop example
+above - it makes much more sense to schedule a single repeating task to run over and over. In Skedule, you
+can tell a coroutine to schedule a repeating task, and at each suspension point, wait until the next execution
+of the task before continuing. To do this, you need to use the `repeating` method:
+```kotlin
+scheduler.schedule(plugin) {
+    repeating(20)
+    for (i in 10 downTo 1) {
+        Bukkit.broadcastMessage("Time left: $i sec...")
+        yield() //wait for next iteration
+    }
+    Bukkit.broadcastMessage("Game starts now!")
+}
+```
+Here, we tell the coroutine to schedule a repeating task with a period of 20 ticks. `yield` is a suspension point.
+Each time this it called, the coroutine will suspend until the next iteration of the repeating task, which in
+our case is 20 ticks in the future. This approach imposes less of an overhead, since behind the scenes only one
+task is scheduled to run repeatedly. The task will, of course, be automatically cancelled when (if ever) the
+coroutine returns. It won't be left hanging.
+
+You can also use `waitFor` in a repeating-task coroutine. The behaviour then is defined as not waiting exactly
+the specified amount of ticks, but **at least** the specified amount of ticks. More specifically, calling
+`waitFor(n)` will suspend the coroutine for n ticks plus the ticks remaining until the next iteration of the
+repeating task. `waitFor` will also return the total amount of ticks waited. Example:
+```kotlin
+scheduler.schedule(plugin) {
+    repeating(20)
+    val waited = waitFor(45)
+    Bukkit.broadcastMessage("$waited") //broadcasts "60"
+}
+```
 
 ### Asynchronous tasks
 The Bukkit scheduler isn't all about scheduling tasks on the main game thread. We often find ourselves
@@ -88,7 +120,25 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
 
 ## Where to get Skedule
 ### Maven
-TODO
+```maven
+<repositories>
+    <repository>
+        <id>okkero</id>
+        <url>http://d.elyc.in:8081/repository/maven-releases/</url>
+    </repository>
+</repositories>
+```
+```maven
+<dependencies>
+    <dependency>
+        <groupId>com.okkero.skedule</groupId>
+        <artifactId>skedule</artifactId>
+        <version>1.0.0</version>
+        <scope>compile</scope>
+    </dependency>
+</dependencies>
+```
+
 ### Get the Kotlin runtime yourself
 Skedule does not contain the Kotlin runtime (and the reason should be obvious).
 Therefore you must make sure the runtime exists in the classpath on your server.
