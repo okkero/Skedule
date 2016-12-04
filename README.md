@@ -125,7 +125,7 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
 <repositories>
     <repository>
         <id>okkero</id>
-        <url>http://nexus.okkero.com/repository/maven-releases/</url>
+        <url>http://nexus.elyc.in/repository/maven-releases/</url>
     </repository>
 </repositories>
 ```
