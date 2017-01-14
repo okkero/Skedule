@@ -133,7 +133,7 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
     <dependency>
         <groupId>com.okkero.skedule</groupId>
         <artifactId>skedule</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
