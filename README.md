@@ -4,7 +4,8 @@ This resource uses features of the early access preview of Kotlin 1.1. Jetbrains
 More information here:  
 https://blog.jetbrains.com/kotlin/2016/07/first-glimpse-of-kotlin-1-1-coroutines-type-aliases-and-more/  
 https://blog.jetbrains.com/kotlin/2016/10/kotlin-1-1-m02-is-here/  
-
+https://blog.jetbrains.com/kotlin/2016/11/kotlin-1-1-m03-is-here/  
+https://blog.jetbrains.com/kotlin/2016/12/kotlin-1-1-m04-is-here/
 # Skedule
 A small coroutine library for the BukkitScheduler for Bukkit/Spigot plugin developers using Kotlin
 
@@ -81,8 +82,8 @@ our case is 20 ticks in the future. This approach imposes less of an overhead, s
 task is scheduled to run repeatedly. The task will, of course, be automatically cancelled when (if ever) the
 coroutine returns. It won't be left hanging.
 
-You can also use `waitFor` in a repeating-task coroutine. The behaviour then is defined as not waiting exactly
-the specified amount of ticks, but **at least** the specified amount of ticks. More specifically, calling
+You can also use `waitFor` in a repeating-task coroutine. The behaviour then is defined not as waiting exactly
+the specified amount of ticks, but as waiting **at least** the specified amount of ticks. More specifically, calling
 `waitFor(n)` will suspend the coroutine for n ticks plus the ticks remaining until the next iteration of the
 repeating task. `waitFor` will also return the total amount of ticks waited. Example:
 ```kotlin
