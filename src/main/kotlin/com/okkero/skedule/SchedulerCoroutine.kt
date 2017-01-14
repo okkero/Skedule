@@ -5,6 +5,10 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.RestrictsSuspension
+import kotlin.coroutines.createCoroutine
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Schedule a coroutine with the Bukkit Scheduler.
@@ -17,9 +21,10 @@ import org.bukkit.scheduler.BukkitTask
  * @see SynchronizationContext
  */
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
-                             coroutine co: BukkitSchedulerController.() -> Continuation<Unit>): CoroutineTask {
+                             co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
-    controller.start(initialContext, controller.co())
+    val coroutine = co.createCoroutine(controller, completion = controller)
+    controller.start(initialContext, coroutine)
 
     return CoroutineTask(controller)
 }
@@ -33,7 +38,8 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
 //TODO Verify if thread safe
-class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
+@RestrictsSuspension
+class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) : Continuation<Unit> {
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
 
@@ -58,7 +64,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
      *
      * @return the actual amount of ticks waited
      */
-    suspend fun waitFor(ticks: Long, cont: Continuation<Long>) {
+    suspend fun waitFor(ticks: Long): Long = suspendCoroutine { cont ->
         schedulerDelegate.doWait(ticks, cont::resume)
     }
 
@@ -70,7 +76,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
      *
      * @return the actual amount of ticks waited
      */
-    suspend fun yield(cont: Continuation<Long>) {
+    suspend fun yield(): Long = suspendCoroutine { cont ->
         schedulerDelegate.doYield(cont::resume)
     }
 
@@ -81,7 +87,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
      * @param context the context to switch to
      * @return `true` if a context switch was made, `false` otherwise
      */
-    suspend fun switchContext(context: SynchronizationContext, cont: Continuation<Boolean>) {
+    suspend fun switchContext(context: SynchronizationContext): Boolean = suspendCoroutine { cont ->
         schedulerDelegate.doContextSwitch(context, cont::resume)
     }
 
@@ -91,7 +97,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
      *
      * @param context the synchronization context of the new task
      */
-    suspend fun newContext(context: SynchronizationContext, cont: Continuation<Unit>) {
+    suspend fun newContext(context: SynchronizationContext): Unit = suspendCoroutine { cont ->
         schedulerDelegate.forceNewContext(context, { cont.resume(Unit) })
     }
 
@@ -102,18 +108,18 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
      * things like countdowns and delays at fixed intervals, since [waitFor] will not result in a new task being
      * spawned.
      */
-    suspend fun repeating(resolution: Long, cont: Continuation<Long>) {
+    suspend fun repeating(resolution: Long): Long = suspendCoroutine { cont ->
         schedulerDelegate = RepeatingTaskScheduler(resolution, plugin, scheduler)
         schedulerDelegate.forceNewContext(currentContext()) { cont.resume(0) }
     }
 
-    operator fun handleResult(result: Unit, cont: Continuation<Nothing>) {
+    override fun resume(result: Unit) {
         currentTask?.cancel()
     }
 
-    operator fun handleException(e: Throwable, cont: Continuation<Nothing>) {
+    override fun resumeWithException(exception: Throwable) {
         currentTask?.cancel()
-        throw e
+        throw exception
     }
 
 }

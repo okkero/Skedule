@@ -6,7 +6,7 @@
 
     <groupId>com.okkero.skedule</groupId>
     <artifactId>skedule</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>Skedule</name>
@@ -14,17 +14,17 @@
     <distributionManagement>
         <repository>
             <id>deployment-elycin</id>
-            <url>http://d.elyc.in:8081/repository/maven-releases/</url>
+            <url>http://nexus.okkero.com/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>deployment-elycin</id>
-            <url>http://d.elyc.in:8081/repository/maven-snapshots/</url>
+            <url>http://nexus.okkero.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.1-M01</kotlin.version>
+        <kotlin.version>1.1-M04</kotlin.version>
         <junit.version>4.12</junit.version>
         <dokka.version>0.9.9</dokka.version>
     </properties>

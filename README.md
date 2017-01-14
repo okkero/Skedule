@@ -5,7 +5,7 @@ More information here:
 https://blog.jetbrains.com/kotlin/2016/07/first-glimpse-of-kotlin-1-1-coroutines-type-aliases-and-more/  
 https://blog.jetbrains.com/kotlin/2016/10/kotlin-1-1-m02-is-here/  
 https://blog.jetbrains.com/kotlin/2016/11/kotlin-1-1-m03-is-here/  
-
+https://blog.jetbrains.com/kotlin/2016/12/kotlin-1-1-m04-is-here/
 # Skedule
 A small coroutine library for the BukkitScheduler for Bukkit/Spigot plugin developers using Kotlin
 
@@ -125,7 +125,7 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
 <repositories>
     <repository>
         <id>okkero</id>
-        <url>http://nexus.elyc.in/repository/maven-releases/</url>
+        <url>http://nexus.okkero.com/repository/maven-releases/</url>
     </repository>
 </repositories>
 ```
@@ -134,7 +134,7 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
     <dependency>
         <groupId>com.okkero.skedule</groupId>
         <artifactId>skedule</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
