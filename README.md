@@ -148,3 +148,11 @@ Therefore you must make sure the runtime exists in the classpath on your server.
 As Kotlin 1.1 is still in early access, Dokka does not yet support it. As a result, there is no
 nicely formatted online documentation for Skedule yet. If you need more formal documentation than
 this readme, please find the KDoc comments in the source code.
+
+## Not using Kotlin?
+If you're not using Kotlin, this resource won't help you. There is no way to express coroutines in
+Java. However, [TaskChain](https://github.com/aikar/TaskChain) has got you covered. With TaskChain
+you can express your synchronous and asynchronous scheduler calls in a reactive sort of way. It
+comes with a really elaborate library to make your experience smooth.
+
+Head over to [TaskChain](https://github.com/aikar/TaskChain)
