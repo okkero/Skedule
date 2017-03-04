@@ -122,7 +122,7 @@ Skedule also comes with a Bukkit `CoroutineDispatcher` for use with the `kotlinx
     }
     
     //async:
-    launch(BukkitDispatcher(this, true)) {
+    launch(BukkitDispatcher(this, async = true)) {
         delay(3, TimeUnit.SECONDS)
         Bukkit.broadcastMessage("Waited for 3 seconds") //On async scheduler thread
     }
