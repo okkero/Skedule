@@ -7,9 +7,13 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.experimental.Continuation
 import kotlin.coroutines.experimental.RestrictsSuspension
 import kotlin.coroutines.experimental.suspendCoroutine
+
+fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
+                    co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
+    return server.scheduler.schedule(this, initialContext, co)
+}
 
 /**
  * Schedule a coroutine with the Bukkit Scheduler.
@@ -44,7 +48,6 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property currentTask the task that is currently executing within the context of this coroutine
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
-//TODO Verify if thread safe
 @RestrictsSuspension
 class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
 
