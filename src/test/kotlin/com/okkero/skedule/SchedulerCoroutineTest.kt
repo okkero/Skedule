@@ -48,6 +48,8 @@ class SchedulerCoroutineTest {
         }
 
         setupServerMock()
+
+        `when`(plugin.server).thenReturn(server)
     }
 
     @After
@@ -93,8 +95,19 @@ class SchedulerCoroutineTest {
         verify(task!!, times(1)).cancel()
     }
 
+    @Test
+    fun `schedules correct tasks when using new function`() {
+        plugin.schedule {
+            waitFor(30)
+            waitFor(30)
+        }
+        verify(scheduler, times(2)).runTaskLater(eq(plugin), any(Runnable::class.java), eq(30L))
+        verifyNoMoreInteractions(scheduler)
+    }
+
     private fun setupServerMock() {
         `when`(server.isPrimaryThread).thenReturn(true)
+        `when`(server.scheduler).thenReturn(scheduler)
         if (Bukkit.getServer() == null) {
             Bukkit.setServer(server)
         }
