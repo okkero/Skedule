@@ -21,14 +21,14 @@ class BukkitDispatcher(val plugin: JavaPlugin, async: Boolean = false) : Corouti
 
     private val runTaskLater: (Plugin, Runnable, Long) -> BukkitTask =
             if (async)
-                bukkitScheduler::runTaskLater
-            else
                 bukkitScheduler::runTaskLaterAsynchronously
+            else
+                bukkitScheduler::runTaskLater
     private val runTask: (Plugin, Runnable) -> BukkitTask =
             if (async)
-                bukkitScheduler::runTask
-            else
                 bukkitScheduler::runTaskAsynchronously
+            else
+                bukkitScheduler::runTask
 
     override fun scheduleResumeAfterDelay(time: Long, unit: TimeUnit, continuation: CancellableContinuation<Unit>) {
         runTaskLater(plugin, Runnable { continuation.resume(Unit) }, unit.toBukkitTicks(time))
