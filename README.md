@@ -1,11 +1,3 @@
-# Warning!
-This resource uses features of the early access preview of Kotlin 1.1. Jetbrains has made no guarantees of compatibility between the current EAP and the final release of 1.1. Therefore the APIs present in this resource may change between now and the release of Kotlin 1.1.
-
-More information here:  
-https://blog.jetbrains.com/kotlin/2016/07/first-glimpse-of-kotlin-1-1-coroutines-type-aliases-and-more/  
-https://blog.jetbrains.com/kotlin/2016/10/kotlin-1-1-m02-is-here/  
-https://blog.jetbrains.com/kotlin/2016/11/kotlin-1-1-m03-is-here/  
-https://blog.jetbrains.com/kotlin/2016/12/kotlin-1-1-m04-is-here/
 # Skedule
 A small coroutine library for the BukkitScheduler for Bukkit/Spigot plugin developers using Kotlin
 
@@ -119,6 +111,26 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
 }
 ```
 
+### CoroutineDispatcher
+Skedule also comes with a Bukkit `CoroutineDispatcher` for use with the `kotlinx.coroutines` library. Use it like any old
+`CoroutineContext`:
+```kotlin
+    //sync:
+    launch(BukkitDispatcher(this)) {
+        delay(3, TimeUnit.SECONDS)
+        Bukkit.broadcastMessage("Waited for 3 seconds") //On sync scheduler thread
+    }
+    
+    //async:
+    launch(BukkitDispatcher(this, async = true)) {
+        delay(3, TimeUnit.SECONDS)
+        Bukkit.broadcastMessage("Waited for 3 seconds") //On async scheduler thread
+    }
+```
+
+You can read more about kotlinx.coroutines here:  
+https://github.com/Kotlin/kotlinx.coroutines
+
 ## Where to get Skedule
 ### Maven
 ```maven
@@ -134,7 +146,7 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
     <dependency>
         <groupId>com.okkero.skedule</groupId>
         <artifactId>skedule</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
@@ -143,10 +155,10 @@ scheduler.schedule(plugin, SynchronizationContext.ASYNC) { //ASYNC here specifie
 ### Get the Kotlin runtime yourself
 Skedule does not contain the Kotlin runtime (and the reason should be obvious).
 Therefore you must make sure the runtime exists in the classpath on your server.
+Skedule also uses API from kotlinx-coroutines, so make sure you have that too.
 
 ## Documentation
-As Kotlin 1.1 is still in early access, Dokka does not yet support it. As a result, there is no
-nicely formatted online documentation for Skedule yet. If you need more formal documentation than
+Coming soon. For now, if you need more formal documentation than
 this readme, please find the KDoc comments in the source code.
 
 ## Not using Kotlin?

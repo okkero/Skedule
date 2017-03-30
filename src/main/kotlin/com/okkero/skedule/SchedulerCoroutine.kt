@@ -1,14 +1,15 @@
 package com.okkero.skedule
 
 import com.okkero.skedule.SynchronizationContext.*
+import kotlinx.coroutines.experimental.Unconfined
+import kotlinx.coroutines.experimental.launch
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.RestrictsSuspension
-import kotlin.coroutines.createCoroutine
-import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.experimental.Continuation
+import kotlin.coroutines.experimental.RestrictsSuspension
+import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * Schedule a coroutine with the Bukkit Scheduler.
@@ -23,8 +24,14 @@ import kotlin.coroutines.suspendCoroutine
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
                              co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
-    val coroutine = co.createCoroutine(controller, completion = controller)
-    controller.start(initialContext, coroutine)
+    launch(Unconfined) {
+        try {
+            controller.start(initialContext)
+            controller.co()
+        } finally {
+            controller.cleanup()
+        }
+    }
 
     return CoroutineTask(controller)
 }
@@ -39,7 +46,7 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  */
 //TODO Verify if thread safe
 @RestrictsSuspension
-class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) : Continuation<Unit> {
+class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
 
@@ -49,8 +56,12 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
         get() = schedulerDelegate is RepeatingTaskScheduler
 
 
-    internal fun start(initialContext: SynchronizationContext, cont: Continuation<Unit>) {
-        schedulerDelegate.doContextSwitch(initialContext, { cont.resume(Unit) })
+    internal suspend fun start(initialContext: SynchronizationContext) = suspendCoroutine<Unit> { cont ->
+        schedulerDelegate.doContextSwitch(initialContext) { cont.resume(Unit) }
+    }
+
+    internal fun cleanup() {
+        currentTask?.cancel()
     }
 
     /**
@@ -111,15 +122,6 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
     suspend fun repeating(resolution: Long): Long = suspendCoroutine { cont ->
         schedulerDelegate = RepeatingTaskScheduler(resolution, plugin, scheduler)
         schedulerDelegate.forceNewContext(currentContext()) { cont.resume(0) }
-    }
-
-    override fun resume(result: Unit) {
-        currentTask?.cancel()
-    }
-
-    override fun resumeWithException(exception: Throwable) {
-        currentTask?.cancel()
-        throw exception
     }
 
 }
