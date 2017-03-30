@@ -17,7 +17,7 @@ private fun TimeUnit.toBukkitTicks(time: Long): Long {
     return toMillis(time) / 50
 }
 
-class BukkitDispatcher(val plugin: JavaPlugin, async: Boolean = false) : CoroutineDispatcher(), Delay {
+class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : CoroutineDispatcher(), Delay {
 
     private val runTaskLater: (Plugin, Runnable, Long) -> BukkitTask =
             if (async)
@@ -35,7 +35,7 @@ class BukkitDispatcher(val plugin: JavaPlugin, async: Boolean = false) : Corouti
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        if (Bukkit.isPrimaryThread()) {
+        if (!async && Bukkit.isPrimaryThread()) {
             block.run()
         } else {
             runTask(plugin, block)
