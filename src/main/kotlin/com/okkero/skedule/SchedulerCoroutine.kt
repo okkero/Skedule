@@ -7,7 +7,6 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.experimental.Continuation
 import kotlin.coroutines.experimental.RestrictsSuspension
 import kotlin.coroutines.experimental.suspendCoroutine
 
