@@ -13,11 +13,11 @@
 
     <distributionManagement>
         <repository>
-            <id>deployment-elycin</id>
+            <id>deployment-okkero</id>
             <url>http://nexus.okkero.com/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>deployment-elycin</id>
+            <id>deployment-okkero</id>
             <url>http://nexus.okkero.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
