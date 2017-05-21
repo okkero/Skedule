@@ -43,7 +43,6 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property currentTask the task that is currently executing within the context of this coroutine
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
-//TODO Verify if thread safe
 @RestrictsSuspension
 class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
 
