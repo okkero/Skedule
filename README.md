@@ -5,6 +5,11 @@ Tired of designing complex BukkitRunnables to meet your needs? Do you find yours
 Fret no more, for with Kotlin's coroutines and this nifty little utility, you will be scheduling tasks like never before!
 
 ## How to use Skedule?
+From here on, assume the following is defined:
+```kotlin
+val scheduler = Bukkit.getScheduler()
+```
+
 ### The simplest form
 The simplest example looks like this:
 ```kotlin
