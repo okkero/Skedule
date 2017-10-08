@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.1.2-2</kotlin.version>
+        <kotlin.version>1.1.51</kotlin.version>
         <junit.version>4.12</junit.version>
         <dokka.version>0.9.9</dokka.version>
     </properties>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
-            <version>0.15</version>
+            <version>0.19.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

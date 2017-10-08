@@ -10,6 +10,11 @@ import org.bukkit.scheduler.BukkitTask
 import kotlin.coroutines.experimental.RestrictsSuspension
 import kotlin.coroutines.experimental.suspendCoroutine
 
+fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
+                    co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
+    return server.scheduler.schedule(this, initialContext, co)
+}
+
 /**
  * Schedule a coroutine with the Bukkit Scheduler.
  *
