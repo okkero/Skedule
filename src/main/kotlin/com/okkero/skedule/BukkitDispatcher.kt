@@ -43,3 +43,5 @@ class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : Cor
     }
 
 }
+
+fun JavaPlugin.dispatcher(async: Boolean = false) = BukkitDispatcher(this, async)
