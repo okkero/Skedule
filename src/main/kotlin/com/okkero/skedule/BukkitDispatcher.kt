@@ -31,7 +31,7 @@ class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : Cor
                 bukkitScheduler::runTask
 
     override fun scheduleResumeAfterDelay(time: Long, unit: TimeUnit, continuation: CancellableContinuation<Unit>) {
-        runTaskLater(plugin, Runnable { continuation.resume(Unit) }, unit.toBukkitTicks(time))
+        runTaskLater(plugin, Runnable { continuation.apply { resumeUndispatched(Unit) } }, unit.toBukkitTicks(time))
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
