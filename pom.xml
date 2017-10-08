@@ -6,18 +6,18 @@
 
     <groupId>com.okkero.skedule</groupId>
     <artifactId>skedule</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>jar</packaging>
 
     <name>Skedule</name>
 
     <distributionManagement>
         <repository>
-            <id>deployment-elycin</id>
+            <id>deployment-okkero</id>
             <url>http://nexus.okkero.com/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>deployment-elycin</id>
+            <id>deployment-okkero</id>
             <url>http://nexus.okkero.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
@@ -35,15 +35,12 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>kotlin-1.1</id>
-            <url>http://dl.bintray.com/kotlin/kotlin-eap-1.1</url>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
         </repository>
     </repositories>
     <pluginRepositories>
-        <pluginRepository>
-            <id>kotlin-1.1-plugin</id>
-            <url>http://dl.bintray.com/kotlin/kotlin-eap-1.1</url>
-        </pluginRepository>
         <pluginRepository>
             <id>jcenter</id>
             <name>JCenter</name>

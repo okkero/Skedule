@@ -17,25 +17,25 @@ private fun TimeUnit.toBukkitTicks(time: Long): Long {
     return toMillis(time) / 50
 }
 
-class BukkitDispatcher(val plugin: JavaPlugin, async: Boolean = false) : CoroutineDispatcher(), Delay {
+class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : CoroutineDispatcher(), Delay {
 
     private val runTaskLater: (Plugin, Runnable, Long) -> BukkitTask =
             if (async)
-                bukkitScheduler::runTaskLater
-            else
                 bukkitScheduler::runTaskLaterAsynchronously
+            else
+                bukkitScheduler::runTaskLater
     private val runTask: (Plugin, Runnable) -> BukkitTask =
             if (async)
-                bukkitScheduler::runTask
-            else
                 bukkitScheduler::runTaskAsynchronously
+            else
+                bukkitScheduler::runTask
 
     override fun scheduleResumeAfterDelay(time: Long, unit: TimeUnit, continuation: CancellableContinuation<Unit>) {
         runTaskLater(plugin, Runnable { continuation.resume(Unit) }, unit.toBukkitTicks(time))
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        if (Bukkit.isPrimaryThread()) {
+        if (!async && Bukkit.isPrimaryThread()) {
             block.run()
         } else {
             runTask(plugin, block)
