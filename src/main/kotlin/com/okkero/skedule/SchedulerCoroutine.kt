@@ -1,14 +1,16 @@
 package com.okkero.skedule
 
 import com.okkero.skedule.SynchronizationContext.*
-import kotlinx.coroutines.experimental.Unconfined
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.experimental.RestrictsSuspension
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.RestrictsSuspension
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
                     co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
@@ -28,7 +30,7 @@ fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
                              co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
-    launch(Unconfined) {
+    GlobalScope.launch(Dispatchers.Unconfined) {
         try {
             controller.start(initialContext)
             controller.co()
@@ -48,7 +50,6 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property currentTask the task that is currently executing within the context of this coroutine
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
-@RestrictsSuspension
 class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
