@@ -148,7 +148,7 @@ class CoroutineTask internal constructor(private val controller: BukkitScheduler
         get() = !(controller.currentTask?.isSync ?: true)
 
     fun cancel() {
-        controller.currentTask!!.cancel()
+        controller.resume(Unit)
     }
 
 }
