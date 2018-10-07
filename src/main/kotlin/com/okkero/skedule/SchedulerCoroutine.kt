@@ -1,16 +1,11 @@
 package com.okkero.skedule
 
 import com.okkero.skedule.SynchronizationContext.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.RestrictsSuspension
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.*
 
 fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
                     co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
@@ -30,14 +25,16 @@ fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
                              co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
-    GlobalScope.launch(Dispatchers.Unconfined) {
+    val block: suspend BukkitSchedulerController.() -> Unit = {
         try {
-            controller.start(initialContext)
-            controller.co()
+            start(initialContext)
+            co()
         } finally {
-            controller.cleanup()
+            cleanup()
         }
     }
+
+    block.createCoroutine(receiver = controller, completion = controller).resume(Unit)
 
     return CoroutineTask(controller)
 }
@@ -50,7 +47,10 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property currentTask the task that is currently executing within the context of this coroutine
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
-class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
+@RestrictsSuspension
+class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) : Continuation<Unit> {
+    override val context: CoroutineContext
+        get() = EmptyCoroutineContext
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
 
@@ -66,6 +66,12 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
 
     internal fun cleanup() {
         currentTask?.cancel()
+    }
+
+    override fun resumeWith(result: SuccessOrFailure<Unit>) {
+        println("completed")
+        cleanup()
+        result.getOrThrow()
     }
 
     /**
