@@ -1,14 +1,11 @@
 package com.okkero.skedule
 
 import com.okkero.skedule.SynchronizationContext.*
-import kotlinx.coroutines.experimental.Unconfined
-import kotlinx.coroutines.experimental.launch
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
-import kotlin.coroutines.experimental.RestrictsSuspension
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.*
 
 fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
                     co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
@@ -28,14 +25,16 @@ fun Plugin.schedule(initialContext: SynchronizationContext = SYNC,
 fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationContext = SYNC,
                              co: suspend BukkitSchedulerController.() -> Unit): CoroutineTask {
     val controller = BukkitSchedulerController(plugin, this)
-    launch(Unconfined) {
+    val block: suspend BukkitSchedulerController.() -> Unit = {
         try {
-            controller.start(initialContext)
-            controller.co()
+            start(initialContext)
+            co()
         } finally {
-            controller.cleanup()
+            cleanup()
         }
     }
+
+    block.createCoroutine(receiver = controller, completion = controller).resume(Unit)
 
     return CoroutineTask(controller)
 }
@@ -49,7 +48,9 @@ fun BukkitScheduler.schedule(plugin: Plugin, initialContext: SynchronizationCont
  * @property isRepeating whether this coroutine is currently backed by a repeating task
  */
 @RestrictsSuspension
-class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) {
+class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitScheduler) : Continuation<Unit> {
+    override val context: CoroutineContext
+        get() = EmptyCoroutineContext
 
     private var schedulerDelegate: TaskScheduler = NonRepeatingTaskScheduler(plugin, scheduler)
 
@@ -65,6 +66,11 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
 
     internal fun cleanup() {
         currentTask?.cancel()
+    }
+
+    override fun resumeWith(result: SuccessOrFailure<Unit>) {
+        cleanup()
+        result.getOrThrow()
     }
 
     /**
@@ -141,7 +147,7 @@ class CoroutineTask internal constructor(private val controller: BukkitScheduler
         get() = !(controller.currentTask?.isSync ?: true)
 
     fun cancel() {
-        controller.currentTask!!.cancel()
+        controller.resume(Unit)
     }
 
 }
