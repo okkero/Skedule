@@ -151,7 +151,7 @@ https://github.com/Kotlin/kotlinx.coroutines
     <dependency>
         <groupId>com.okkero.skedule</groupId>
         <artifactId>skedule</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.4</version>
         <scope>compile</scope>
     </dependency>
 </dependencies>
