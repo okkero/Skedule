@@ -3,6 +3,7 @@ package com.okkero.skedule
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Delay
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -13,10 +14,8 @@ import kotlin.coroutines.CoroutineContext
 private val bukkitScheduler
     get() = Bukkit.getScheduler()
 
-private fun TimeUnit.toBukkitTicks(time: Long): Long {
-    return toMillis(time) / 50
-}
 
+@UseExperimental(InternalCoroutinesApi::class)
 class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : CoroutineDispatcher(), Delay {
 
     private val runTaskLater: (Plugin, Runnable, Long) -> BukkitTask =
@@ -30,8 +29,8 @@ class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : Cor
             else
                 bukkitScheduler::runTask
 
-    override fun scheduleResumeAfterDelay(time: Long, unit: TimeUnit, continuation: CancellableContinuation<Unit>) {
-        runTaskLater(plugin, Runnable { continuation.apply { resumeUndispatched(Unit) } }, unit.toBukkitTicks(time))
+    override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
+        runTaskLater(plugin, Runnable { continuation.apply { resumeUndispatched(Unit) } }, timeMillis / 50)
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
