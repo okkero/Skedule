@@ -68,7 +68,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
         currentTask?.cancel()
     }
 
-    override fun resumeWith(result: SuccessOrFailure<Unit>) {
+    override fun resumeWith(result: Result<Unit>) {
         cleanup()
         result.getOrThrow()
     }
