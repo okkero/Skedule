@@ -6,7 +6,7 @@
 
     <groupId>com.okkero.skedule</groupId>
     <artifactId>skedule</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
     <packaging>jar</packaging>
 
     <name>Skedule</name>
