@@ -27,10 +27,20 @@ class BukkitDispatcher(val plugin: JavaPlugin, val async: Boolean = false) : Cor
 
     @ExperimentalCoroutinesApi
     override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
-        runTaskLater(plugin, Runnable { continuation.apply { resumeUndispatched(Unit) } }, timeMillis / 50)
+        val task = runTaskLater(
+                plugin,
+                Runnable {
+                    continuation.apply { resumeUndispatched(Unit) }
+                },
+                timeMillis / 50)
+        continuation.invokeOnCancellation { task.cancel() }
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
+        if (!context.isActive) {
+            return
+        }
+
         if (!async && Bukkit.isPrimaryThread()) {
             block.run()
         } else {
