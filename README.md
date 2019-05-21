@@ -156,6 +156,19 @@ https://github.com/Kotlin/kotlinx.coroutines
     </dependency>
 </dependencies>
 ```
+### Gradle
+```groovy
+repositories {
+    maven {
+        name = "okkero"
+        url = "http://nexus.okkero.com/repository/maven-releases/"
+    }
+}
+
+dependencies {
+    compile("com.okkero.skedule:skedule:1.2.6")
+}
+```
 
 ### Get the Kotlin runtime yourself
 Skedule does not contain the Kotlin runtime (and the reason should be obvious).
