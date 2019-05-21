@@ -175,10 +175,6 @@ Skedule does not contain the Kotlin runtime (and the reason should be obvious).
 Therefore you must make sure the runtime exists in the classpath on your server.
 Skedule also uses API from kotlinx-coroutines, so make sure you have that too.
 
-## Documentation
-Coming soon. For now, if you need more formal documentation than
-this readme, please find the KDoc comments in the source code.
-
 ## Not using Kotlin?
 If you're not using Kotlin, this resource won't help you. There is no way to express coroutines in
 Java. However, [TaskChain](https://github.com/aikar/TaskChain) has got you covered. With TaskChain
